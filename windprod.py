@@ -5,6 +5,7 @@ from aws import get_records, update_records
 from demand import get_demand
 from entsoapi import get_price_data
 
+
 # Triggered hourly to check new wind power records and posts daily/monthly tweets
 def wind_tweets():
     # Set to false if ran on AWS
@@ -75,10 +76,13 @@ def wind_tweets():
         numhours = 24 * int(numdays)
         monthly_wind_tweet(numhours, month, debug=debugging_mode)
 
+
 """
 Monthly wind power tweet
 TODO: Currently not working, need to change image generator
 """
+
+
 def monthly_wind_tweet(numhours, month, debug=True):
     windprodvalues, times = get_wind_production(numhours)
     i = argmax(windprodvalues)
@@ -110,9 +114,38 @@ def monthly_wind_tweet(numhours, month, debug=True):
     else:
         create_tweet(text, debug=debug)
 
+
+"""
+Weekly wind power tweet
+"""
+
+
+def get_weekly_wind_production():
+    start_time, end_time = get_times(24*7)
+
+    headers = {'x-api-key': os.environ['FGAPIKEY']}
+    params = {'start_time': start_time, 'end_time': end_time}
+
+    r = requests.get(f'http://api.fingrid.fi/v1/variable/75/events/csv', params=params, headers=headers, verify=False)
+    content = r.content.decode('utf-8')
+
+
+    cr = csv.reader(content.splitlines(), delimiter=",")
+    mylist = list(cr)
+    values = []
+    times = []
+    for row in mylist[1:]:
+        values.append(int(row[2]))
+        times.append(row[0])
+
+    return values, times
+
+
 """
 Reads Fingrid's wind power forecast for possible future records
 """
+
+
 def forecast(record_timestamp, record, hours, debug=True):
     windprodvalues, times = get_forecast(hours)
     i = argmax(windprodvalues)
@@ -128,11 +161,15 @@ def forecast(record_timestamp, record, hours, debug=True):
 """
 Helper functions for Fingrid's API
 """
+
+
 def get_forecast(hours):
     return get_data_from_FG_API(245, hours)
 
+
 def get_wind_production(hours=24):
     return get_data_from_FG_API(75, hours)
+
 
 def get_wind_capacity(hours):
     return get_data_from_FG_API(268, hours)

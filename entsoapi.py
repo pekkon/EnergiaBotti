@@ -2,6 +2,7 @@ import pandas as pd
 from entsoe import EntsoePandasClient
 import os
 
+
 def get_price_data(start_ts, end_ts):
     token = os.environ['ENTSO_TOKEN']
 

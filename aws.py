@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 
+
 def update_records(timestamppi, value, taulu='tuulituotanto', avain="this", debug=True):
     if debug:
         return None
@@ -20,6 +21,7 @@ def update_records(timestamppi, value, taulu='tuulituotanto', avain="this", debu
         ReturnValues="UPDATED_NEW"
     )
     return response
+
 
 def get_records(dynamodb=None, taulu='tuulituotanto', avain="this", debug=True):
 

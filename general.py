@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 import json, requests
 
+
 # Takes UTC timestamp and converts it into Finnish time
 def get_time_string(utctime):
     utctime = datetime.strptime(utctime[:-5], "%Y-%m-%dT%H:%M:%S")
@@ -13,8 +14,10 @@ def get_time_string(utctime):
 def argmax(iterable):
     return max(enumerate(iterable), key=lambda x: x[1])[0]
 
+
 def argmin(iterable):
     return min(enumerate(iterable), key=lambda x: x[1])[0]
+
 
 def datetime_from_utc_to_local(utc_datetime):
     local_timestamp = datetime.now(timezone('Europe/Helsinki')).replace(tzinfo=None)
@@ -22,6 +25,7 @@ def datetime_from_utc_to_local(utc_datetime):
     offset = local_timestamp - utc_timestamp + timedelta(hours=1)
 
     return utc_datetime + offset
+
 
 # returns timestamps for current hour and x hours before or after
 def get_times(hours=24):
@@ -35,11 +39,13 @@ def get_times(hours=24):
         firsthour = (timenow + timedelta(hours=-hours)).strftime("%Y-%m-%dT%H") + ":00:00Z"
         return currhour, firsthour
 
+
 # Check if date is end of month
 def end_of_month(dt):
     todays_month = dt.month
     tomorrows_month = (dt + timedelta(days=1)).month
     return True if tomorrows_month != todays_month else False
+
 
 def create_price_wind_image_url(labels, winddata, pricedata):
     local = labels
@@ -166,6 +172,7 @@ def create_price_wind_image_url(labels, winddata, pricedata):
         chart_response = json.loads(response.text)
         url = chart_response['url']
         return url
+
 
 def create_wind_image_url(labels, data):
     local = []

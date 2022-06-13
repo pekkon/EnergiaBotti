@@ -1,7 +1,6 @@
 from demand import demand_tweets
 from windprod import wind_tweets
 from general import *
-
 import locale
 
 locale.setlocale(locale.LC_ALL, 'fi_FI')

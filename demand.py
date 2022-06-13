@@ -1,9 +1,9 @@
 from datetime import datetime
-
 from tweeter import create_tweet
 from aws import update_records, get_records
 from fingidapi import get_data_from_FG_API
 from general import get_time_string
+
 
 def demand_tweets():
     demandvalues, times = get_demand(3)
@@ -31,6 +31,7 @@ def demand_tweets():
             update_records(prevhour, demand_prevhour, taulu='kulutus', avain=str(currentyear))
         print(text)
         create_tweet(text)
+
 
 def get_demand(hours):
     return get_data_from_FG_API(124, hours)

@@ -2,6 +2,7 @@ import os
 import tweepy
 import requests
 
+
 def twitter_api():
     auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECRET'])
 
@@ -17,6 +18,7 @@ def twitter_api():
         print("Error during authentication")
 
     return api
+
 
 def tweet_image(url, message, debug=True):
     api = twitter_api()
@@ -34,6 +36,7 @@ def tweet_image(url, message, debug=True):
     else:
         print("Unable to download image")
         return None
+
 
 def create_tweet(text, debug=True):
 
