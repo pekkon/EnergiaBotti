@@ -1,6 +1,9 @@
 import csv, os, requests
 from general import get_times
 
+"""
+Reads csv-file given by Fingrid's open data API and converts it to list of timestamps and values
+"""
 def get_data_from_FG_API(variableid, hours=24):
     start_time, end_time = get_times(hours)
     print(start_time, end_time)

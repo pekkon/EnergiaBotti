@@ -1,8 +1,9 @@
 import boto3
 from botocore.exceptions import ClientError
 
-def update_records(timestamppi, value, taulu='tuulituotanto', avain="this"):
-    return None
+def update_records(timestamppi, value, taulu='tuulituotanto', avain="this", debug=True):
+    if debug:
+        return None
     dynamodb = boto3.resource('dynamodb')
 
     table = dynamodb.Table(taulu)
@@ -20,9 +21,11 @@ def update_records(timestamppi, value, taulu='tuulituotanto', avain="this"):
     )
     return response
 
+def get_records(dynamodb=None, taulu='tuulituotanto', avain="this", debug=True):
 
-def get_records(dynamodb=None, taulu='tuulituotanto', avain="this"):
-    return 1,1
+    if debug:
+        return 1, 1
+
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb')
 
