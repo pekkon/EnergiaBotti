@@ -181,7 +181,11 @@ def create_price_wind_image_url(labels, winddata, pricedata):
         return url
 
 
-def create_wind_image_url(labels, data):
+def create_wind_image_url(labels, data, maxtick=None):
+    if maxtick is None:
+        maxtick = max(data)
+        # Round to upper hundredth
+        maxtick -= maxtick % -100
     local = []
     for label in labels:
         local.append(get_time_string(label)[:-6])
@@ -243,6 +247,7 @@ def create_wind_image_url(labels, data):
                     "id": "y1",
                     "ticks": {
                         "min": 0,
+                        "max": maxtick,
                         "stepSize": 200
                     },
                     "scaleLabel": {

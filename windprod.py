@@ -33,9 +33,7 @@ def wind_tweets(debugging_mode = True):
     nuclearprodvalues, nuctimes = get_data_from_FG_API(188, 1)
     url = create_wind_image_url(nuctimes, nuclearprodvalues)
     print(url)
-
-    url = create_wind_image_url(times, windprodvalues)
-    print(url)
+    # Price & Wind test
     labels, prices = get_price_data(*get_times(24))
     url = create_price_wind_image_url(labels, windprodvalues, prices)
     print(url)
@@ -55,6 +53,9 @@ def wind_tweets(debugging_mode = True):
 
         capacityvalues, capatimes = get_wind_capacity(24)
         sumcapacity = sum(capacityvalues)
+        maxcapacity = max(capacityvalues)
+        # Rounding for upper hundredth
+        maxcapacity -= maxcapacity % -100
 
         # Demand
         demandvalues, times = get_demand(24)
@@ -64,7 +65,7 @@ def wind_tweets(debugging_mode = True):
                f'yhden tunnin tuotanto oli {maxwind_prev24} MWh ja pienin {minwind_prev24} MWh.\nTuotanto kattoi ' \
                f'{round(sumwind/sumdemand*100, 1)} % kulutuksesta ja sen käyttöaste oli {round(sumwind/sumcapacity*100, 1)} %'
         print(text)
-        url = create_wind_image_url(times, windprodvalues)
+        url = create_wind_image_url(times, windprodvalues, maxcapacity)
         print(url)
         if url != None:
             tweet_image(url, text, debug=debugging_mode)
