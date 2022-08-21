@@ -48,6 +48,10 @@ def end_of_month(dt):
 
 
 def create_price_wind_image_url(labels, winddata, pricedata):
+    if min(pricedata) < 0:
+        min_price_tick = min(pricedata)
+    else:
+        min_price_tick = 0
     local = labels
     config = {
         "type": "line",
@@ -135,6 +139,9 @@ def create_price_wind_image_url(labels, winddata, pricedata):
                     },
                     {
                     "id": "y2",
+                        "ticks": {
+                            "min": min_price_tick
+                        },
                     "position": "right",
                     "gridLines": {
                         "drawOnChartArea": False

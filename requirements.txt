@@ -1,0 +1,6 @@
+entsoe-py
+pytz
+tweepy
+boto3
+botocore
+requests

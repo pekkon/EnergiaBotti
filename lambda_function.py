@@ -7,8 +7,13 @@ locale.setlocale(locale.LC_ALL, 'fi_FI')
 
 
 def lambda_handler(event, context):
-    wind_tweets()
-    #demand_tweets()
+    x = 105
+    x -= x % -100
+    print(x)
+    # Set to false if ran on AWS
+    debugging_mode = True
+    wind_tweets(debugging_mode)
+    demand_tweets(debugging_mode)
 
     return {
         'statusCode': 200,

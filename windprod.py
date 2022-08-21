@@ -4,14 +4,15 @@ from tweeter import create_tweet, tweet_image
 from aws import get_records, update_records
 from demand import get_demand
 from entsoapi import get_price_data
+import os, csv
 
 
 # Triggered hourly to check new wind power records and posts daily/monthly tweets
-def wind_tweets():
-    # Set to false if ran on AWS
-    debugging_mode = True
+def wind_tweets(debugging_mode = True):
 
-    windprodvalues, times = get_wind_capacity(24)
+
+
+    windprodvalues, times = get_wind_production(24)
 
     maxwind_prev24 = max(windprodvalues)
     minwind_prev24 = min(windprodvalues)
@@ -29,13 +30,15 @@ def wind_tweets():
     lasthour = f'Wind prod during hour {prevhour} was {windprod_prevhour} MWh. Record is {record} MWh during hour {record_timestamp}.'
     print(lasthour)
     # Nuclear production testing
-    """nuclearprodvalues, nuctimes = get_data_from_FG_API(188, 1)
+    nuclearprodvalues, nuctimes = get_data_from_FG_API(188, 1)
     url = create_wind_image_url(nuctimes, nuclearprodvalues)
-    print(url)"""
+    print(url)
 
     url = create_wind_image_url(times, windprodvalues)
     print(url)
     labels, prices = get_price_data(*get_times(24))
+    url = create_price_wind_image_url(labels, windprodvalues, prices)
+    print(url)
 
     if int(windprod_prevhour) >= int(record):
         text = f"Uusi yhden tunnin tuulivoimatuotantoennätys! {windprod_prevhour} MWh tunnilla {prevhour}. " \
@@ -100,8 +103,6 @@ def monthly_wind_tweet(numhours, month, debug=True):
     # Demand
     demandvalues, times = get_demand(numhours)
     sumdemand = sum(demandvalues)
-
-
 
     text = f'Tuulivoiman yhden tunnin tuotanto oli {month}ssa {localtime.year} keskimäärin {int(round(avgwind, 0))} MWh.' \
            f' Kuukauden suurin yhden tunnin tuotanto oli {maxwind} MWh ja pienin {minwind} MWh.\nTuotanto kattoi ' \
