@@ -194,17 +194,27 @@ def create_wind_image_url(labels, data, maxtick=None):
         "data": {
             "labels": local,
             "datasets": [{
+                "fill": "true",
                 "label": "Tuulivoimatuotanto",
                 "data": data,
-                "fill": "false",
-                "pointRadius": 0
+                "spanGaps": "false",
+                "lineTension": 0.2,
+                "pointRadius": 0,
+                "borderColor": "#001CE5",
+                "backgroundColor": "rgba(0, 148, 229, 0.25)",
+                "borderWidth": 5
             }]
         },
         "options": {
             "title": {
                 "display": "true",
-                "text": f"Tuulivoimatuotanto tunneittain 01.04.2022 00:00-01.04.2022 23:59"#{local[0]}-{local[-1][:-2]}59"
-
+                "text": f"Tuulivoimatuotanto tunneittain {local[0]}-{local[-1][:-2]}59",
+                "position": "top",
+                "fontSize": 12,
+                "fontColor": "#0E101E",
+                "fontStyle": "bold",
+                "padding": 10,
+                "lineHeight": 1.2
             },
             "legend": {
                 "position": "right",
@@ -227,14 +237,35 @@ def create_wind_image_url(labels, data, maxtick=None):
                         "source": "auto",
                         "maxRotation": 0,
                         "autoSkipPadding": 5,
+                        "fontColor": "#0E101E",
+                        "fontStyle": "bold",
+                        "padding": 8,
                         "major": {
                             "unit": "hour",
                             "displayFormats": {
                                 "day": "DD.MM.",
                                 "hour": "HH:mm"
                             }
-                        }
-
+                        },
+                    },
+                    "gridLines": {
+                        "display": "true",
+                        "color": "rgba(0, 0, 0, 0.05)",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "lineWidth": 1,
+                        "drawBorder": "true",
+                        "drawOnChartArea": "false",
+                        "drawTicks": "true",
+                        "tickMarkLength": 5,
+                        "zeroLineWidth": 1,
+                        "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                        "zeroLineBorderDash": [
+                            0,
+                            0
+                        ]
                     },
                     "scaleLabel": {
                         "display": False,
@@ -246,9 +277,33 @@ def create_wind_image_url(labels, data, maxtick=None):
                     {
                     "id": "y1",
                     "ticks": {
+                        "beginAtZero": "true",
                         "min": 0,
                         "max": maxtick,
-                        "stepSize": 200
+                        "maxTicksLimit": 20,
+                        "fontColor": "#0E101E",
+                        "fontStyle": "bold",
+                        "padding": 8,
+                        "stepSize": 400
+                    },
+                    "gridLines": {
+                        "display": "true",
+                        "color": "rgba(0, 0, 0, 0.1)",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "lineWidth": 1,
+                        "drawBorder": "true",
+                        "drawOnChartArea": "true",
+                        "drawTicks": "true",
+                        "tickMarkLength": 5,
+                        "zeroLineWidth": 1,
+                        "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                        "zeroLineBorderDash": [
+                            0,
+                            0
+                        ]
                     },
                     "scaleLabel": {
                         "display": "true",
@@ -257,7 +312,6 @@ def create_wind_image_url(labels, data, maxtick=None):
                     }
                 ]
             }
-
         }
 
     }

@@ -10,9 +10,8 @@ import os, csv
 # Triggered hourly to check new wind power records and posts daily/monthly tweets
 def wind_tweets(debugging_mode = True):
 
-
-
     windprodvalues, times = get_wind_production(24)
+    capacityvalues, capatimes = get_wind_capacity(24)
 
     maxwind_prev24 = max(windprodvalues)
     minwind_prev24 = min(windprodvalues)
@@ -30,8 +29,11 @@ def wind_tweets(debugging_mode = True):
     lasthour = f'Wind prod during hour {prevhour} was {windprod_prevhour} MWh. Record is {record} MWh during hour {record_timestamp}.'
     print(lasthour)
     # Nuclear production testing
-    nuclearprodvalues, nuctimes = get_data_from_FG_API(188, 1)
-    url = create_wind_image_url(nuctimes, nuclearprodvalues)
+    nuclearprodvalues, nuctimes = get_data_from_FG_API(188, 2)
+    maxcapacity = max(capacityvalues)
+    # Rounding for upper hundredth
+    #maxcapacity -= maxcapacity % -100
+    url = create_wind_image_url(times, windprodvalues, maxcapacity)
     print(url)
     # Price & Wind test
     labels, prices = get_price_data(*get_times(24))
@@ -51,11 +53,11 @@ def wind_tweets(debugging_mode = True):
         avgwind = sum(windprodvalues) / len(windprodvalues)
         # Wind capacity
 
-        capacityvalues, capatimes = get_wind_capacity(24)
+
         sumcapacity = sum(capacityvalues)
         maxcapacity = max(capacityvalues)
         # Rounding for upper hundredth
-        maxcapacity -= maxcapacity % -100
+        maxcapacity -= maxcapacity % -200
 
         # Demand
         demandvalues, times = get_demand(24)
