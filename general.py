@@ -199,10 +199,11 @@ def create_wind_image_url(labels, data, maxtick=None):
                 "data": data,
                 "spanGaps": "false",
                 "lineTension": 0.2,
-                "pointRadius": 0,
+                "pointRadius": 2,
                 "borderColor": "#001CE5",
-                "backgroundColor": "rgba(0, 148, 229, 0.25)",
-                "borderWidth": 5
+                "pointStyle": "circle",
+                "backgroundColor": "#001CE5",
+                "borderWidth": 2
             }]
         },
         "options": {
@@ -239,6 +240,7 @@ def create_wind_image_url(labels, data, maxtick=None):
                         "autoSkipPadding": 5,
                         "fontColor": "#0E101E",
                         "fontStyle": "bold",
+                        "fontSize": 10,
                         "padding": 8,
                         "major": {
                             "unit": "hour",
@@ -282,6 +284,7 @@ def create_wind_image_url(labels, data, maxtick=None):
                         "max": maxtick,
                         "maxTicksLimit": 20,
                         "fontColor": "#0E101E",
+                        "fontSize": 10,
                         "fontStyle": "bold",
                         "padding": 8,
                         "stepSize": 400

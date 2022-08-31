@@ -35,11 +35,11 @@ def wind_tweets(debugging_mode = True):
     #maxcapacity -= maxcapacity % -100
     url = create_wind_image_url(times, windprodvalues, maxcapacity)
     print(url)
+    tweet_image(url, "asd")
     # Price & Wind test
-    labels, prices = get_price_data(*get_times(24))
-    url = create_price_wind_image_url(labels, windprodvalues, prices)
-    print(url)
-
+    #labels, prices = get_price_data(*get_times(24))
+    #url = create_price_wind_image_url(labels, windprodvalues, prices)
+    #print(url)
     if int(windprod_prevhour) >= int(record):
         text = f"Uusi yhden tunnin tuulivoimatuotantoennätys! {windprod_prevhour} MWh tunnilla {prevhour}. " \
                f"Edellinen ennätys oli {record} MWh tunnilla {record_timestamp}. #tuulivoima"
@@ -85,7 +85,7 @@ def wind_tweets(debugging_mode = True):
 
 """
 Monthly wind power tweet
-TODO: Currently not working, need to change image generator
+TODO: Currently not working, need to change image generator or reduce amount of data points (480 max)
 """
 
 
@@ -111,7 +111,7 @@ def monthly_wind_tweet(numhours, month, debug=True):
            f' Kuukauden suurin yhden tunnin tuotanto oli {maxwind} MWh ja pienin {minwind} MWh.\nTuotanto kattoi ' \
            f'{round(sumwind/sumdemand*100, 1)} % kulutuksesta ja sen käyttöaste oli {round(sumwind/sumcapacity*100, 1)} %'
     print(text)
-    url = create_wind_image_url(times, windprodvalues)
+    url = create_wind_image_url(times[::4], windprodvalues[::4])
     print(url)
     if url != None:
         tweet_image(url, text, debug=debug)

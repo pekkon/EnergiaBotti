@@ -1,6 +1,6 @@
 import os
 import tweepy
-import requests
+import requests, urllib.parse
 
 
 def twitter_api():
@@ -23,8 +23,17 @@ def twitter_api():
 def tweet_image(url, message, debug=True):
     api = twitter_api()
     filename = 'tmp/temp.png'
-    request = requests.get(url, stream=True)
-    print(url)
+
+    watermark_full_logo = "https://i.imgur.com/AkhVDAM.png"
+    watermark_profile = "https://i.imgur.com/Kd4P3y2.png"
+
+    url_watermark = f"https://quickchart.io/watermark?mainImageUrl={urllib.parse.quote_plus(url)}" \
+                    f"&markImageUrl={urllib.parse.quote_plus(watermark_profile)}" \
+                    f"&markRatio=0.07&position=topRight&opacity=1&margin=0"
+    print("URL for ", message[:10])
+    print(url_watermark)
+    request = requests.get(url_watermark, stream=True)
+
     if request.status_code == 200:
         with open(filename, 'wb') as image:
             for chunk in request:
