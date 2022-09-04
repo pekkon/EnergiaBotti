@@ -1,5 +1,5 @@
 from general import *
-from fingidapi import get_data_from_FG_API
+from fingridapi import get_data_from_FG_API
 from tweeter import create_tweet, tweet_image
 from aws import get_records, update_records
 from demand import get_demand
@@ -33,9 +33,9 @@ def wind_tweets(debugging_mode = True):
     maxcapacity = max(capacityvalues)
     # Rounding for upper hundredth
     #maxcapacity -= maxcapacity % -100
-    url = create_wind_image_url(times, windprodvalues, maxcapacity)
-    print(url)
-    tweet_image(url, "asd")
+    #url = create_wind_image_url(times, windprodvalues, maxcapacity)
+    #print(url)
+    #tweet_image(url, "Testing")
     # Price & Wind test
     #labels, prices = get_price_data(*get_times(24))
     #url = create_price_wind_image_url(labels, windprodvalues, prices)

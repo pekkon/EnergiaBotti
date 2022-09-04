@@ -22,7 +22,7 @@ def twitter_api():
 
 def tweet_image(url, message, debug=True):
     api = twitter_api()
-    filename = 'tmp/temp.png'
+    filename = '/tmp/temp.png'
 
     watermark_full_logo = "https://i.imgur.com/AkhVDAM.png"
     watermark_profile = "https://i.imgur.com/Kd4P3y2.png"
