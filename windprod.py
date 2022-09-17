@@ -3,7 +3,6 @@ from fingridapi import get_data_from_FG_API
 from tweeter import create_tweet, tweet_image
 from aws import get_records, update_records
 from demand import get_demand
-from entsoapi import get_price_data
 import os, csv
 
 
@@ -37,7 +36,7 @@ def wind_tweets(debugging_mode = True):
     #print(url)
     #tweet_image(url, "Testing")
     # Price & Wind test
-    #labels, prices = get_price_data(*get_times(24))
+
     #url = create_price_wind_image_url(labels, windprodvalues, prices)
     #print(url)
     if int(windprod_prevhour) >= int(record):

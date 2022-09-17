@@ -40,3 +40,5 @@ def demand_tweets(debugging_mode=True):
 
 def get_demand(hours):
     return get_data_from_FG_API(124, hours)
+
+

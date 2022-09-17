@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pytz import timezone
 import json, requests
+from pandas import Timestamp
 
 
 # Takes UTC timestamp and converts it into Finnish time
@@ -39,6 +40,12 @@ def get_times(hours=24):
         firsthour = (timenow + timedelta(hours=-hours)).strftime("%Y-%m-%dT%H") + ":00:00Z"
         return currhour, firsthour
 
+def get_next_day_timestamps():
+    timenow = datetime.utcnow()
+    date = (timenow + timedelta(days=1)).strftime("%Y-%m-%d")
+    start = Timestamp(date + " 00:00", tz='Europe/Helsinki')
+    end = Timestamp(date + " 23:59", tz='Europe/Helsinki')
+    return start, end
 
 # Check if date is end of month
 def end_of_month(dt):
@@ -63,15 +70,19 @@ def create_price_wind_image_url(labels, winddata, pricedata):
                 "yAxisID": "y1",
                 "data": winddata,
                 "fill": "false",
-                "pointStyle": "line",
-                "pointRadius": 0
+                "spanGaps": "false",
+                "lineTension": 0.2,
+                "pointRadius": 2,
+                "borderColor": "#001CE5",
+                "pointStyle": "circle",
+                "backgroundColor": "#001CE5",
+                "borderWidth": 2
             },
                 {
                     "label": "Suomen aluehinta",
                     "yAxisID": "y2",
                     "data": pricedata,
-                    "borderDash": [4, 8],
-                    "borderColor": "red",
+                    "borderColor": "#000000",
                     "fill": "false",
                     "pointStyle": "line",
                     "pointRadius": 0
@@ -81,7 +92,7 @@ def create_price_wind_image_url(labels, winddata, pricedata):
         "options": {
             "title": {
                 "display": "true",
-                "text": f"Tuulivoimatuotanto ja Suomen aluehinta tunneittain {local[0]}-{local[-1][:-2]}59"
+                "text": f"Suomen tuulivoimatuotanto ja aluehinta tunneittain {local[0][:10]} (hinta sis. ALV)"
 
             },
             "legend": {
@@ -148,7 +159,7 @@ def create_price_wind_image_url(labels, winddata, pricedata):
                     },
                     "scaleLabel": {
                         "display": "true",
-                        "labelString": "€/MWh"
+                        "labelString": "snt/kWh"
                     }
                     }
                 ]
@@ -209,7 +220,7 @@ def create_wind_image_url(labels, data, maxtick=None):
         "options": {
             "title": {
                 "display": "true",
-                "text": f"Tuulivoimatuotanto tunneittain {local[0]}-{local[-1][:-2]}59",
+                "text": f"Tuulivoimatuotanto tunneittain {local[0][:10]}",
                 "position": "top",
                 "fontSize": 12,
                 "fontColor": "#0E101E",
@@ -317,6 +328,353 @@ def create_wind_image_url(labels, data, maxtick=None):
             }
         }
 
+    }
+    params = {
+        'chart': json.dumps(config),
+        'width': 500,
+        'height': 300,
+        'backgroundColor': 'white',
+    }
+
+    quickchart_url = 'https://quickchart.io/chart/create'
+    post_data = params
+
+    response = requests.post(
+        quickchart_url,
+        json=post_data,
+    )
+
+    if (response.status_code != 200):
+        print('Error:', response.text)
+        return None
+    else:
+        chart_response = json.loads(response.text)
+        url = chart_response['url']
+        return url
+
+def create_price_demand_image_url(labels, pricedata, demand, maxtick=None):
+    if maxtick is None:
+        maxtick = max(pricedata)
+        # Round to upper tenth
+        maxtick -= maxtick % -10
+    demand_max_tick = max(demand)
+    demand_max_tick -= demand_max_tick % - 200
+
+    config = {
+        "type": "line",
+        "data": {
+            "labels": labels,
+            "datasets": [{
+                "fill": "true",
+                "label": "Sähkön hinta",
+                "data": pricedata,
+                "spanGaps": "false",
+                "lineTension": 0.2,
+                "pointRadius": 0,
+                "borderColor": "#000000",
+                "pointStyle": "circle",
+                "backgroundColor": "#000000",
+                "steppedLine": True,
+                "borderWidth": 3,
+                "yAxisID": "y1"
+            },
+            {
+                "label": "Suomen kulutusennuste",
+                "yAxisID": "y2",
+                "data": demand,
+                "borderColor": "#001CE5",
+                "backgroundColor": "#001CE5",
+                "lineTension": 0.2,
+                "fill": "false",
+                "pointStyle": "circle",
+                "borderWidth": 2,
+                "pointRadius": 2
+            }
+            ]
+        },
+        "options": {
+            "title": {
+                "display": "true",
+                "text": f"Suomen sähkön hinnat ja kulutusennuste tunneittain {labels[0][:10]}",
+                "position": "top",
+                "fontSize": 12,
+                "fontColor": "#000000",
+                "fontStyle": "bold",
+                "padding": 10,
+                "lineHeight": 1.2
+            },
+            "legend": {
+                "position": "top",
+                "display": True,
+                "fontSize": 8
+
+            },
+            "scales": {
+                "xAxes": [{
+                    "type": "time",
+                    "time": {
+                        "parser": "DD.MM.YYYY HH:mm",
+                        "isoWeek": "true",
+
+                        "displayFormats": {
+                            "day": "DD.MM.",
+                            "hour": "HH:mm"
+                        }
+                    },
+                    "ticks": {
+                        "source": "auto",
+                        "maxRotation": 0,
+                        "autoSkipPadding": 5,
+                        "fontColor": "#0E101E",
+                        "fontStyle": "bold",
+                        "fontSize": 10,
+                        "padding": 8,
+                        "major": {
+                            "unit": "hour",
+                            "displayFormats": {
+                                "day": "DD.MM.",
+                                "hour": "HH:mm"
+                            }
+                        },
+                    },
+                    "gridLines": {
+                        "display": "true",
+                        "color": "rgba(0, 0, 0, 0.05)",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "lineWidth": 1,
+                        "drawBorder": "true",
+                        "drawOnChartArea": "false",
+                        "drawTicks": "true",
+                        "tickMarkLength": 5,
+                        "zeroLineWidth": 1,
+                        "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                        "zeroLineBorderDash": [
+                            0,
+                            0
+                        ]
+                    },
+                    "scaleLabel": {
+                        "display": False,
+                        "labelString": "Aika"
+                    }
+                }],
+
+                "yAxes": [
+                    {
+                    "id": "y1",
+                    "ticks": {
+                        "beginAtZero": "true",
+                        "min": 0,
+                        "max": maxtick,
+                        "maxTicksLimit": 20,
+                        "fontColor": "#000000",
+                        "fontSize": 10,
+                        "fontStyle": "bold",
+                        "padding": 8,
+                        "stepSize": 5
+                    },
+                    "gridLines": {
+                        "display": "true",
+                        "color": "rgba(0, 0, 0, 0.1)",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "lineWidth": 1,
+                        "drawBorder": "true",
+                        "drawOnChartArea": "true",
+                        "drawTicks": "true",
+                        "tickMarkLength": 5,
+                        "zeroLineWidth": 1,
+                        "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                        "zeroLineBorderDash": [
+                            0,
+                            0
+                        ]
+                    },
+                    "scaleLabel": {
+                        "display": "true",
+                        "labelString": "snt/kWh (sis. ALV)"
+                        }
+                    },
+                    {
+                        "id": "y2",
+                        "position": "right",
+                        "gridLines": {
+                            "drawOnChartArea": False
+                        },
+                        "scaleLabel": {
+                            "display": "true",
+                            "labelString": "MWh/h"
+                        }
+                    }
+
+                ]
+            }
+        }
+    }
+    params = {
+        'chart': json.dumps(config),
+        'width': 500,
+        'height': 300,
+        'backgroundColor': 'white',
+    }
+
+    quickchart_url = 'https://quickchart.io/chart/create'
+    post_data = params
+
+    response = requests.post(
+        quickchart_url,
+        json=post_data,
+    )
+
+    if (response.status_code != 200):
+        print('Error:', response.text)
+        return None
+    else:
+        chart_response = json.loads(response.text)
+        url = chart_response['url']
+        return url
+
+def create_price_image_url(labels, pricedata, maxtick=None):
+    if maxtick is None:
+        maxtick = max(pricedata)
+        # Round to upper tenth
+        maxtick -= maxtick % -10
+
+    config = {
+        "type": "line",
+        "data": {
+            "labels": labels,
+            "datasets": [{
+                "fill": "true",
+                "label": "Sähkön hinta",
+                "data": pricedata,
+                "spanGaps": "false",
+                "lineTension": 0.2,
+                "pointRadius": 0,
+                "borderColor": "#000000",
+                "pointStyle": "circle",
+                "backgroundColor": "#000000",
+                "steppedLine": True,
+                "borderWidth": 2,
+                "yAxisID": "y1"
+            }
+            ]
+        },
+        "options": {
+            "title": {
+                "display": "true",
+                "text": f"Sähkön spot-hinnat Suomessa tunneittain {labels[0][:10]} (sis. ALV)",
+                "position": "top",
+                "fontSize": 12,
+                "fontColor": "#000000",
+                "fontStyle": "bold",
+                "padding": 10,
+                "lineHeight": 1.2
+            },
+            "legend": {
+                "position": "top",
+                "display": False
+
+            },
+            "scales": {
+                "xAxes": [{
+                    "type": "time",
+                    "time": {
+                        "parser": "DD.MM.YYYY HH:mm",
+                        "isoWeek": "true",
+
+                        "displayFormats": {
+                            "day": "DD.MM.",
+                            "hour": "HH:mm"
+                        }
+                    },
+                    "ticks": {
+                        "source": "auto",
+                        "maxRotation": 0,
+                        "autoSkipPadding": 5,
+                        "fontColor": "#0E101E",
+                        "fontStyle": "bold",
+                        "fontSize": 10,
+                        "padding": 8,
+                        "major": {
+                            "unit": "hour",
+                            "displayFormats": {
+                                "day": "DD.MM.",
+                                "hour": "HH:mm"
+                            }
+                        },
+                    },
+                    "gridLines": {
+                        "display": "true",
+                        "color": "rgba(0, 0, 0, 0.05)",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "lineWidth": 1,
+                        "drawBorder": "true",
+                        "drawOnChartArea": "false",
+                        "drawTicks": "true",
+                        "tickMarkLength": 5,
+                        "zeroLineWidth": 1,
+                        "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                        "zeroLineBorderDash": [
+                            0,
+                            0
+                        ]
+                    },
+                    "scaleLabel": {
+                        "display": False,
+                        "labelString": "Aika"
+                    }
+                }],
+
+                "yAxes": [
+                    {
+                    "id": "y1",
+                    "ticks": {
+                        "beginAtZero": "true",
+                        "min": 0,
+                        "max": maxtick,
+                        "maxTicksLimit": 20,
+                        "fontColor": "#000000",
+                        "fontSize": 10,
+                        "fontStyle": "bold",
+                        "padding": 8,
+                        "stepSize": 5
+                    },
+                    "gridLines": {
+                        "display": "true",
+                        "color": "rgba(0, 0, 0, 0.1)",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "lineWidth": 1,
+                        "drawBorder": "true",
+                        "drawOnChartArea": "true",
+                        "drawTicks": "true",
+                        "tickMarkLength": 5,
+                        "zeroLineWidth": 1,
+                        "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                        "zeroLineBorderDash": [
+                            0,
+                            0
+                        ]
+                    },
+                    "scaleLabel": {
+                        "display": "true",
+                        "labelString": "snt/kWh"
+                        }
+                    }
+                ]
+            }
+        }
     }
     params = {
         'chart': json.dumps(config),
