@@ -1,8 +1,8 @@
-from general import *
-from fingridapi import get_data_from_FG_API
-from tweeter import create_tweet, tweet_image
-from aws import get_records, update_records
-from demand import get_demand
+from src.general import *
+from src.fingridapi import get_data_from_FG_API
+from src.tweeter import create_tweet, tweet_image
+from src.aws import get_records, update_records
+from src.demand import get_demand
 import os, csv
 
 

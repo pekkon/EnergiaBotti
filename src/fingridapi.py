@@ -1,5 +1,5 @@
 import csv, os, requests
-from general import get_times
+from src.general import get_times
 
 
 """

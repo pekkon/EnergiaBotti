@@ -406,7 +406,9 @@ def create_price_demand_image_url(labels, pricedata, demand, maxtick=None):
             "legend": {
                 "position": "top",
                 "display": True,
-                "fontSize": 8
+                "fontSize": 8,
+                "boxWidth": 20,
+                "usePointStyle": True
 
             },
             "scales": {

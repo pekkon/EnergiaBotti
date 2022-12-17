@@ -1,8 +1,8 @@
 from datetime import datetime
-from tweeter import create_tweet
-from aws import update_records, get_records
-from fingridapi import get_data_from_FG_API
-from general import get_time_string
+from src.tweeter import create_tweet
+from src.aws import update_records, get_records
+from src.fingridapi import get_data_from_FG_API
+from src.general import get_time_string
 
 
 def demand_tweets(debugging_mode=True):
